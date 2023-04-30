@@ -4,18 +4,17 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ExampleSubsystem extends SubsystemBase {
-  /** Creates a new ExampleSubsystem. */
-  public ExampleSubsystem() {}
+public class Intake extends SubsystemBase {
+  private final TalonFX intakeMotor = new TalonFX(0);
+  
+  /** Creates a new Intake. */
+  public Intake() {}
 
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
   public CommandBase exampleMethodCommand() {
     // Inline construction of command goes here.
     // Subsystem::RunOnce implicitly requires `this` subsystem.
