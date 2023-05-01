@@ -17,8 +17,15 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
 
   }
-  
+
   public static class CANid {
     public static final int intakeID = 0;
+    public static final int feederID = 0;
+    public static final int intakePneumaticID = 0;
+  }
+
+  public static class pneumaticChannels {
+    public static final int intakeFoward = 0;
+    public static final int intakeBack = 0;
   }
 }
