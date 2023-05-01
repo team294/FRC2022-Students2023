@@ -4,35 +4,74 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.CANid;
+import frc.robot.Constants.pneumaticChannels;
+import frc.robot.utilities.FileLog;
 
 public class Intake extends SubsystemBase {
-  private final TalonFX intakeMotor = new TalonFX(0);
-  
-  /** Creates a new Intake. */
-  public Intake() {}
 
-  public CommandBase exampleMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
+  private final WPI_TalonFX intakeMotor;
+  private final WPI_TalonFX feederMotor;
+  private final DoubleSolenoid solenoid;
+  private final String subsystemName;
+  private final FileLog log;
+
+  private boolean extended;
+
+  /** Creates a new Intake Subsystem. */
+  public Intake(FileLog log) {
+    this.log = log;
+    intakeMotor = new WPI_TalonFX(CANid.intakeID);
+    feederMotor = new WPI_TalonFX(CANid.feederID);
+    solenoid = new DoubleSolenoid(CANid.intakePneumaticID, PneumaticsModuleType.REVPH, pneumaticChannels.intakeFoward, pneumaticChannels.intakeBack);
+    subsystemName = "Intake";
+    extended = false;
+  }
+
+  public String getName() {
+    return subsystemName;
+  }
+
+
+  /**
+   * @param PistonExtended true = extended | false = retracted
+   */
+  public void setIntakeExtended(boolean PistonExtended){
+    extended = PistonExtended;
+    solenoid.set(extended ? Value.kForward : Value.kReverse);
   }
 
   /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
+   * @return true = extended | false = retracted
    */
-  public boolean exampleCondition() {
-    // Query some boolean state, such as a digital sensor.
-    return false;
+  public boolean isExtended(){
+    return extended;
   }
+
+  public void intakeMotorSetPercentOutput(double percent){
+    intakeMotor.set(ControlMode.PercentOutput, percent);
+  }
+
+  public void feederMotorSetPercentOuput(double percent){
+    feederMotor.set(ControlMode.PercentOutput, percent);
+  }
+  
+  public void toggleIntake(){
+    setIntakeExtended(!extended);
+    intakeMotorSetPercentOutput(extended ? .50 : 0);
+    feederMotorSetPercentOuput(extended ? .50 : 0);
+  }
+
 
   @Override
   public void periodic() {
